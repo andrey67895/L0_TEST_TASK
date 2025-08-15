@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  description: L0_TEST_TASK
+  title: WB TechSchool L0
+  version: actual
+servers:
+  - url: http://{host}:{port}
+    variables:
+      host:
+        default: "127.0.0.1"
+        description: Хост API сервера
+      port:
+        default: "80"
+        description: Порт API сервера
+
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: OK
+      operationId: get_api_main_index_html
+  /order/{order_uid}:
+    get:
+      parameters:
+        - name: order_uid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      operationId: api_v1_get_order_by_order_uid
+
+components:
+  schemas:
+    Order:
+      type: object
+      required:
+        - order_uid
+        - track_number
+        - entry
+        - delivery
+        - payment
+        - items
+      properties:
+        order_uid:
+          type: string
+        track_number:
+          type: string
+        entry:
+          type: string
+        delivery:
+          $ref: '#/components/schemas/Delivery'
+        payment:
+          $ref: '#/components/schemas/Payment'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        locale:
+          type: string
+        internal_signature:
+          type: string
+        customer_id:
+          type: string
+        delivery_service:
+          type: string
+        shardkey:
+          type: string
+        sm_id:
+          type: integer
+        date_created:
+          type: string
+          format: date-time
+        oof_shard:
+          type: string
+
+    Delivery:
+      type: object
+      required:
+        - name
+        - phone
+        - zip
+        - city
+        - address
+        - region
+        - email
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        zip:
+          type: string
+        city:
+          type: string
+        address:
+          type: string
+        region:
+          type: string
+        email:
+          type: string
+
+    Payment:
+      type: object
+      properties:
+        transaction:
+          type: string
+        request_id:
+          type: string
+        currency:
+          type: string
+        provider:
+          type: string
+        amount:
+          type: integer
+        payment_dt:
+          type: integer
+        bank:
+          type: string
+        delivery_cost:
+          type: integer
+        goods_total:
+          type: integer
+        custom_fee:
+          type: integer
+      required:
+        - transaction
+        - currency
+        - provider
+        - amount
+    Item:
+      type: object
+      properties:
+        chrt_id:
+          type: integer
+        track_number:
+          type: string
+        price:
+          type: integer
+        rid:
+          type: string
+        name:
+          type: string
+        sale:
+          type: integer
+        size:
+          type: string
+        total_price:
+          type: integer
+        nm_id:
+          type: integer
+        brand:
+          type: string
+        status:
+          type: integer
+      required:
+        - chrt_id
+        - track_number
+        - price
+        - rid
+        - name

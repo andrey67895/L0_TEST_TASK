@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L0 Task Test</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+
+<header>
+    <h1>L0 Task Test</h1>
+    <button id="themeToggleBtn" class="theme-btn">Темная тема</button>
+</header>
+
+<main>
+    <form id="orderForm">
+        <input type="text" id="uid" placeholder="Введите UID заказа" required>
+        <button type="submit">Отправить</button>
+    </form>
+
+    <div class="order-info" id="orderInfo" style="display:none;">
+        <h2>Детали заказа</h2>
+        <pre id="orderJson"></pre>
+    </div>
+</main>
+
+<script src="/assets/script.js"></script>
+</body>
+</html>
