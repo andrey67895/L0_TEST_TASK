@@ -20,8 +20,5 @@ type Order struct {
 }
 
 func (o Order) IsValid() bool {
-	if o.OrderUID == "" {
-		return false
-	}
-	return true
+	return o.OrderUID != ""
 }
