@@ -32,8 +32,21 @@ type AppConfig struct {
 }
 
 type CacheConfig struct {
-	Capacity        int           `yaml:"capacity" env:"CAPACITY"`
+	Type     string       `yaml:"type" env:"TYPE"`
+	Capacity int          `yaml:"capacity" env:"CAPACITY"`
+	Memory   MemoryConfig `yaml:"memory" env-prefix:"MEMORY_"`
+	Redis    RedisConfig  `yaml:"redis" env-prefix:"REDIS_"`
+}
+
+type MemoryConfig struct {
 	CleanupInterval time.Duration `yaml:"cleanup_interval" env:"CLEANUP_INTERVAL"`
+}
+
+type RedisConfig struct {
+	Addr     string        `yaml:"addr" env:"ADDR"`
+	Password string        `yaml:"password" env:"PASSWORD"`
+	DB       int           `yaml:"db" env:"DB"`
+	TTL      time.Duration `yaml:"ttl" env:"TTL"`
 }
 
 type DatabaseConfig struct {

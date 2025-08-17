@@ -10,11 +10,15 @@ services:
     environment:
       - L0_DB_HOST=postgres
       - L0_KAFKA_BROKERS=kafka:9092
+#      - L0_CACHE_TYPE=redis # Работает с memory из конфига
+#      - L0_CACHE_REDIS_ADDR=redis:6379
     depends_on:
       kafka:
         condition: service_healthy
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - api_l0_task_test_network
 
@@ -50,6 +54,15 @@ services:
     networks:
       - api_l0_task_test_network
 
+  redis:
+    image: redis:8.2
+    container_name: redis
+#    ports:
+#      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
   kafka:
     image: bitnami/kafka:4.0
     container_name: kafka
@@ -79,6 +92,7 @@ services:
 volumes:
   postgres_data:
   kafka_data:
+  redis_data:
 
 networks:
   api_l0_task_test_network:

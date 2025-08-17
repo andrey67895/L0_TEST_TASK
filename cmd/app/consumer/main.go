@@ -12,7 +12,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/andrey67895/L0_TEST_TASK/internal/cache/in_memory"
+	"github.com/andrey67895/L0_TEST_TASK/internal/cache/redis"
 	"github.com/andrey67895/L0_TEST_TASK/internal/config"
+	"github.com/andrey67895/L0_TEST_TASK/internal/interfaces"
 	"github.com/andrey67895/L0_TEST_TASK/internal/kafka"
 	"github.com/andrey67895/L0_TEST_TASK/internal/logger"
 	"github.com/andrey67895/L0_TEST_TASK/internal/migrations"
@@ -73,7 +75,7 @@ func main() {
 	orderRepo := postgres.NewOrderRepository(db)
 
 	//cache
-	orderCache := in_memory.NewInMemoryCache(cfg.CacheConfig.Capacity, cfg.CacheConfig.CleanupInterval)
+	orderCache := NewOrderCache(cfg.CacheConfig, log)
 
 	//service
 	orderService := service.NewOrderService(orderRepo, orderCache)
@@ -125,4 +127,17 @@ func main() {
 		log.Error("Error during server shutdown", zap.Error(err))
 	}
 
+}
+
+func NewOrderCache(cfg config.CacheConfig, log *logger.Logger) interfaces.OrderCacheRepository {
+	switch cfg.Type {
+	case "redis":
+		client := redis.NewRedisClient(cfg.Redis.Addr, cfg.Redis.Password, cfg.Redis.DB)
+		return redis.NewRedisOrderCache(client, log)
+	case "memory":
+		return in_memory.NewInMemoryCache(cfg.Capacity, cfg.Memory.CleanupInterval)
+	default:
+		log.Fatal("Неизвестный тип кэша")
+	}
+	return nil
 }

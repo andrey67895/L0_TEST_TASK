@@ -25,8 +25,15 @@ kafka:
   group_id: "orders-processor"
 
 cache:
+  type: "memory"       # memory | redis
   capacity: 1000
-  cleanup_interval: "5m"
+  memory:
+    cleanup_interval: "5m"
+  redis:
+    addr: "localhost:6379"
+    password: ""
+    db: 0
+    ttl: "10m"
 
 cors:
   allow_origins: 
