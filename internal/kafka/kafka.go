@@ -21,7 +21,44 @@ type KafkaService struct {
 	orderService *service.OrderService
 }
 
-func NewKafkaReader(ctx context.Context, brokers []string, topic, groupID string, log *logger.Logger, orderService *service.OrderService) {
+func (k *KafkaService) EnsureTopicExists(ctx context.Context, brokers []string, topic string, numPartitions, replicationFactor int) error {
+	for _, broker := range brokers {
+		conn, err := kafka.DialContext(ctx, "tcp", broker)
+		if err != nil {
+			return err
+		}
+		defer conn.Close()
+
+		// Получаем все партиции
+		partitions, err := conn.ReadPartitions()
+		if err != nil {
+			return err
+		}
+
+		// Проверяем, существует ли топик
+		for _, p := range partitions {
+			if p.Topic == topic {
+				k.log.Debug("Топик уже существует в Kafka:", zap.String("topic", topic))
+				return nil
+			}
+		}
+
+		// Создаём топик
+		err = conn.CreateTopics(kafka.TopicConfig{
+			Topic:             topic,
+			NumPartitions:     numPartitions,
+			ReplicationFactor: replicationFactor,
+		})
+		if err != nil {
+			return err
+		}
+
+		k.log.Debug("Топик создан в Kafka:", zap.String("topic", topic))
+	}
+	return nil
+}
+
+func NewKafkaService(ctx context.Context, brokers []string, topic, groupID string, log *logger.Logger, orderService *service.OrderService) {
 	ctx, cansel := context.WithCancel(ctx)
 	ks := &KafkaService{
 		KafkaReader: kafka.NewReader(kafka.ReaderConfig{
@@ -35,6 +72,9 @@ func NewKafkaReader(ctx context.Context, brokers []string, topic, groupID string
 		}),
 		log:          log,
 		orderService: orderService,
+	}
+	if err := ks.EnsureTopicExists(ctx, brokers, topic, 1, 1); err != nil {
+		ks.log.Fatal("ошибка при создании топика в Kafka")
 	}
 	messages := make(chan kafka.Message, 100)
 	var wg sync.WaitGroup
@@ -60,7 +100,6 @@ func (k *KafkaService) processMessage(ctx context.Context, msg kafka.Message) er
 				return err
 			}
 		} else {
-			//Пустой ORDER_ID
 			return nil
 		}
 	}

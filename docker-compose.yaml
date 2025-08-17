@@ -12,7 +12,7 @@ services:
       - L0_KAFKA_BROKERS=kafka:9092
     depends_on:
       kafka:
-        condition: service_started
+        condition: service_healthy
       postgres:
         condition: service_healthy
     networks:
@@ -28,7 +28,7 @@ services:
       app-consumer:
         condition: service_started
       kafka:
-        condition: service_started
+        condition: service_healthy
     networks:
       - api_l0_task_test_network
 
@@ -70,7 +70,11 @@ services:
       - kafka_data:/bitnami/kafka
     networks:
       - api_l0_task_test_network
-
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
   postgres_data:

@@ -110,8 +110,7 @@ func main() {
 
 	}()
 	ctx, cancel := context.WithCancel(ctx)
-	go kafka.NewKafkaReader(ctx, cfg.KafkaConfig.GetBrokersList(), cfg.KafkaConfig.Topic, cfg.KafkaConfig.GroupID, log, orderService)
-	// Wait for interrupt signal
+	go kafka.NewKafkaService(ctx, cfg.KafkaConfig.GetBrokersList(), cfg.KafkaConfig.Topic, cfg.KafkaConfig.GroupID, log, orderService)
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
