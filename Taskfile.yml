@@ -33,7 +33,7 @@ tasks:
 
   staticcheck:
     cmds:
-      - docker run --rm -v $(pwd):/app -w /app golang:1.24 sh -c "go install honnef.co/go/tools/cmd/staticcheck@latest && staticcheck ./..."
+      - docker run --rm -v $(pwd):/app -w /app golang:1.24 sh -c "go install honnef.co/go/tools/cmd/staticcheck@latest && staticcheck -f stylish ./..."
     silent: false
 
   test-unit:
