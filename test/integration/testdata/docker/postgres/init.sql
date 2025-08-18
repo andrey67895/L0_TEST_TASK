@@ -1,0 +1,1 @@
+CREATE DATABASE l0_task_test;

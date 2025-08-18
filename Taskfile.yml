@@ -4,8 +4,28 @@ tasks:
   generate-api:
     cmds:
       - go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen -package api -generate types,server,spec ./contracts/openapi.yaml > ./internal/transport/http/api/api.gen.go
+      - go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen -package core_client -generate types,client ./contracts/openapi.yaml > ./test/integration/clients/core/client.go
+
+  go-mod-tidy:
+    cmds:
+      - go mod tidy
+      - cd test && go mod tidy
 
   staticcheck:
     cmds:
       - docker run --rm -v $(pwd):/app -w /app golang:1.24 sh -c "go install honnef.co/go/tools/cmd/staticcheck@latest && staticcheck ./..."
     silent: false
+
+  test-unit:
+    cmds:
+      - go test ./... -v
+
+  test-integration:
+    cmds:
+      - docker builder prune -f
+      - cd test/integration/test && go test ./... -v
+
+  test:
+    cmds:
+      - task test-unit
+      - task test-integration
