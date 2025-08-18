@@ -75,8 +75,10 @@ func New(cfg Config) (*Logger, error) {
 	}, nil
 }
 
+var osHostname = os.Hostname
+
 func getHostname() string {
-	hostname, err := os.Hostname()
+	hostname, err := osHostname() // <- вместо os.Hostname() теперь вызываем переменную
 	if err != nil {
 		return "unknown"
 	}
