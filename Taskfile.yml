@@ -1,6 +1,26 @@
 version: '3'
 
 tasks:
+  build:
+    cmds:
+      - docker compose build
+  up:
+    cmds:
+      - docker compose up -d
+
+  stop:
+    cmds:
+      - docker compose stop
+
+  down:
+    cmds:
+      - docker compose down
+
+  delete:
+    cmds:
+      - docker compose down -v
+
+
   generate-api:
     cmds:
       - go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen -package api -generate types,server,spec ./contracts/openapi.yaml > ./internal/transport/http/api/api.gen.go
